@@ -1,0 +1,428 @@
+GAMING CLUB MANAGEMENT SYSTEM - API DOCUMENTATION
+==================================================
+
+Base URL: http://localhost:8080
+Server Port: 8080
+
+OVERVIEW
+--------
+This is a Spring Boot application for managing a gaming club with members, game sessions, and admin functionality.
+
+API ENDPOINTS
+=============
+
+1. ADMIN ENDPOINTS (/api/admin)
+===============================
+
+1.1 Admin Login
+---------------
+POST /api/admin/login
+Content-Type: application/json
+
+Request Body:
+{
+    "username": "admin",
+    "password": "admin123"
+}
+
+Response:
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9...",
+    "message": "Login successful",
+    "username": "admin"
+}
+
+Curl Example:
+curl -X POST http://localhost:8080/api/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+1.2 Get Dashboard
+----------------
+GET /api/admin/dashboard
+
+Response:
+{
+    "totalMembers": 3,
+    "activeToday": 1,
+    "dailyIncome": 50.0,
+    "totalActiveSessions": 0,
+    "totalRechargeToday": 100.0
+}
+
+Curl Example:
+curl -X GET http://localhost:8080/api/admin/dashboard
+
+1.3 Get Daily Income
+--------------------
+GET /api/admin/daily-income?date=2025-10-06
+
+Response:
+{
+    "date": "2025-10-06",
+    "totalIncome": 50.0,
+    "sessionCount": 1
+}
+
+Curl Example:
+curl -X GET "http://localhost:8080/api/admin/daily-income?date=2025-10-06"
+
+1.4 Admin Logout
+----------------
+POST /api/admin/logout
+
+Response: "Logout successful"
+
+Curl Example:
+curl -X POST http://localhost:8080/api/admin/logout
+
+2. MEMBER ENDPOINTS (/api/members)
+===================================
+
+2.1 Create Member
+-----------------
+POST /api/members
+Content-Type: application/json
+
+Request Body:
+{
+    "name": "Alice Johnson",
+    "phone": "5555555555",
+    "email": "alice@example.com"
+}
+
+Response:
+{
+    "id": 3,
+    "name": "Alice Johnson",
+    "phone": "5555555555",
+    "email": "alice@example.com",
+    "cardId": "CARD1759725483603",
+    "balance": 0.0,
+    "createdAt": "2025-10-06T10:08:03.603881",
+    "updatedAt": "2025-10-06T10:08:03.603887"
+}
+
+Curl Example:
+curl -X POST http://localhost:8080/api/members \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Alice Johnson","phone":"5555555555","email":"alice@example.com"}'
+
+2.2 Get All Members
+-------------------
+GET /api/members
+
+Response:
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "phone": "1234567890",
+        "email": "john@example.com",
+        "cardId": "CARD1758892814123",
+        "balance": 425.0,
+        "createdAt": "2025-09-26T18:50:14.123365",
+        "updatedAt": "2025-09-26T18:51:27.060024"
+    }
+]
+
+Curl Example:
+curl -X GET http://localhost:8080/api/members
+
+2.3 Get Member by ID
+--------------------
+GET /api/members/{memberId}
+
+Response:
+{
+    "id": 3,
+    "name": "Alice Johnson",
+    "phone": "5555555555",
+    "email": "alice@example.com",
+    "cardId": "CARD1759725483603",
+    "balance": 0.0,
+    "createdAt": "2025-10-06T10:08:03.603881",
+    "updatedAt": "2025-10-06T10:08:03.603887"
+}
+
+Curl Example:
+curl -X GET http://localhost:8080/api/members/3
+
+2.4 Recharge Member
+-------------------
+POST /api/members/{memberId}/recharge
+Content-Type: application/json
+
+Request Body:
+{
+    "amount": 100.0,
+    "description": "Initial recharge"
+}
+
+Response:
+{
+    "memberId": 3,
+    "previousBalance": 0.0,
+    "amount": 100.0,
+    "newBalance": 100.0,
+    "message": "Recharge successful",
+    "transactionType": "RECHARGE"
+}
+
+Curl Example:
+curl -X POST http://localhost:8080/api/members/3/recharge \
+  -H "Content-Type: application/json" \
+  -d '{"amount":100.0,"description":"Initial recharge"}'
+
+2.5 Deduct from Member
+----------------------
+POST /api/members/{memberId}/deduct
+Content-Type: application/json
+
+Request Body:
+{
+    "amount": 25.0,
+    "description": "Game session deduction"
+}
+
+Response:
+{
+    "memberId": 3,
+    "previousBalance": 100.0,
+    "amount": 25.0,
+    "newBalance": 75.0,
+    "message": "Deduction successful",
+    "transactionType": "DEDUCTION"
+}
+
+Curl Example:
+curl -X POST http://localhost:8080/api/members/3/deduct \
+  -H "Content-Type: application/json" \
+  -d '{"amount":25.0,"description":"Game session deduction"}'
+
+2.6 Get Member Balance
+----------------------
+GET /api/members/{memberId}/balance
+
+Response:
+{
+    "memberId": 3,
+    "previousBalance": 0.0,
+    "amount": 0.0,
+    "newBalance": 50.0,
+    "message": "Current balance retrieved",
+    "transactionType": null
+}
+
+Curl Example:
+curl -X GET http://localhost:8080/api/members/3/balance
+
+2.7 Delete Member
+-----------------
+DELETE /api/members/{memberId}
+
+Response: "Member deleted successfully"
+
+Curl Example:
+curl -X DELETE http://localhost:8080/api/members/3
+
+3. GAME SESSION ENDPOINTS (/api/game)
+=====================================
+
+3.1 Create Game Session
+-----------------------
+POST /api/game/sessions
+Content-Type: application/json
+
+Request Body:
+{
+    "memberId": 3,
+    "machineId": "MACHINE001",
+    "gameType": "SLOT",
+    "amount": 50.0,
+    "durationMinutes": 30
+}
+
+Response:
+{
+    "id": 2,
+    "memberId": 3,
+    "machineId": "MACHINE001",
+    "gameType": "SLOT",
+    "amount": 50.0,
+    "durationMinutes": 30,
+    "status": "ACTIVE",
+    "startTime": "2025-10-06T10:08:16.179292",
+    "endTime": null,
+    "message": "Game session details retrieved"
+}
+
+Curl Example:
+curl -X POST http://localhost:8080/api/game/sessions \
+  -H "Content-Type: application/json" \
+  -d '{"memberId":3,"machineId":"MACHINE001","gameType":"SLOT","amount":50.0,"durationMinutes":30}'
+
+3.2 Get Game Sessions
+---------------------
+GET /api/game/sessions
+GET /api/game/sessions?date=2025-10-06
+GET /api/game/sessions?memberId=3
+
+Response:
+[
+    {
+        "id": 1,
+        "memberId": 1,
+        "machineId": "MACHINE_001",
+        "gameType": "Racing",
+        "amount": 50.0,
+        "durationMinutes": 0,
+        "status": "COMPLETED",
+        "startTime": "2025-09-26T18:50:48.150017",
+        "endTime": "2025-09-26T18:50:57.39322",
+        "message": "Game session details retrieved"
+    }
+]
+
+Curl Example:
+curl -X GET http://localhost:8080/api/game/sessions
+
+3.3 End Game Session
+--------------------
+POST /api/game/sessions/{sessionId}/end
+
+Response:
+{
+    "id": 2,
+    "memberId": 3,
+    "machineId": "MACHINE001",
+    "gameType": "SLOT",
+    "amount": 50.0,
+    "durationMinutes": 0,
+    "status": "COMPLETED",
+    "startTime": "2025-10-06T10:08:16.179292",
+    "endTime": "2025-10-06T10:08:23.097382",
+    "message": "Game session ended successfully"
+}
+
+Curl Example:
+curl -X POST http://localhost:8080/api/game/sessions/2/end
+
+3.4 Get Game Session by ID
+--------------------------
+GET /api/game/sessions/{sessionId}
+
+Response:
+{
+    "id": 2,
+    "memberId": 3,
+    "machineId": "MACHINE001",
+    "gameType": "SLOT",
+    "amount": 50.0,
+    "durationMinutes": 30,
+    "status": "ACTIVE",
+    "startTime": "2025-10-06T10:08:16.179292",
+    "endTime": null,
+    "message": "Game session details retrieved"
+}
+
+Curl Example:
+curl -X GET http://localhost:8080/api/game/sessions/2
+
+3.5 Get Available Machines
+---------------------------
+GET /api/game/machines
+
+Response:
+["MACHINE_001", "MACHINE_002", "MACHINE_003", "MACHINE_004", "MACHINE_005"]
+
+Curl Example:
+curl -X GET http://localhost:8080/api/game/machines
+
+3.6 Get Machine Status
+----------------------
+GET /api/game/machines/{machineId}/status
+
+Response: "AVAILABLE" or "OCCUPIED"
+
+Curl Example:
+curl -X GET http://localhost:8080/api/game/machines/MACHINE001/status
+
+ERROR RESPONSES
+===============
+
+Common Error Response Format:
+{
+    "timestamp": "2025-10-06T10:07:56.596604",
+    "status": 409,
+    "error": "Duplicate Resource",
+    "message": "Phone number already exists",
+    "path": "uri=/api/members"
+}
+
+Error Codes:
+- 400: Bad Request (validation errors)
+- 404: Resource Not Found
+- 409: Conflict (duplicate resources)
+- 500: Internal Server Error
+
+VALIDATION RULES
+================
+
+Member Request:
+- name: Required, 2-100 characters
+- phone: Required, exactly 10 digits
+- email: Required, valid email format
+
+Admin Login:
+- username: Required, 3-50 characters
+- password: Required, minimum 6 characters
+
+Game Session:
+- memberId: Required, must be valid member ID
+- machineId: Required, non-empty string
+- gameType: Required, non-empty string
+- amount: Required, must be greater than 0.01
+
+Recharge Request:
+- amount: Required, must be greater than 0.01
+- description: Optional string
+
+TESTING NOTES
+=============
+
+1. The application runs on port 8080
+2. Database: MySQL (localhost:3306/gaming_club)
+3. Default admin credentials: username="admin", password="admin123"
+4. All timestamps are in UTC format
+5. Member phone numbers must be unique
+6. Member emails must be unique
+7. Game sessions automatically deduct amount from member balance
+8. Machine IDs are predefined: MACHINE_001 through MACHINE_005
+
+SAMPLE WORKFLOW
+===============
+
+1. Create a member:
+   curl -X POST http://localhost:8080/api/members \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Test User","phone":"1111111111","email":"test@example.com"}'
+
+2. Recharge the member:
+   curl -X POST http://localhost:8080/api/members/1/recharge \
+     -H "Content-Type: application/json" \
+     -d '{"amount":100.0,"description":"Initial recharge"}'
+
+3. Start a game session:
+   curl -X POST http://localhost:8080/api/game/sessions \
+     -H "Content-Type: application/json" \
+     -d '{"memberId":1,"machineId":"MACHINE_001","gameType":"SLOT","amount":25.0}'
+
+4. End the game session:
+   curl -X POST http://localhost:8080/api/game/sessions/1/end
+
+5. Check member balance:
+   curl -X GET http://localhost:8080/api/members/1/balance
+
+6. View admin dashboard:
+   curl -X GET http://localhost:8080/api/admin/dashboard
